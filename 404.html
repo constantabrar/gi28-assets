@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Generated Image Collection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+
+        :root {
+            --bg-base: #020204;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #3b82f6;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-highlight: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* --- AMBIENT BACKGROUND BLOBS --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.6;
+            animation: drift 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+        }
+
+        .blob-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            animation-delay: -12s;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        /* --- HEADER (GLASSMORPHIC) --- */
+        header {
+            display: flex;
+            justify-content: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-glass {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 45px 50px;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 760px;
+            box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.6), inset 0 1px 0 var(--glass-highlight);
+            transition: transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .header-glass:hover {
+            border-color: rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 2.7rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 0 0 18px 0;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 32px rgba(139, 92, 246, 0.3);
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin: 0;
+            font-weight: 300;
+        }
+
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        a:hover {
+            color: #fff;
+            background: rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+        }
+
+        /* --- GALLERY GRID & MARQUEE --- */
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 3vw;
+            padding-bottom: 100px;
+        }
+
+        .marquee-container {
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+        }
+
+        /* Premium edge fading masking */
+        .marquee-container::before,
+        .marquee-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 15vw;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .marquee-container::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-base) 0%, transparent 100%);
+        }
+
+        .marquee-container::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-base) 0%, transparent 100%);
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 2vw;
+            width: max-content;
+            padding: 10px 0;
+            will-change: transform;
+            transform: translateZ(0); /* Hardware acceleration */
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused !important;
+        }
+
+        /* Animations */
+        @keyframes scroll-ltr {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        @keyframes scroll-rtl {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- GLASSMORPHIC IMAGE CARDS --- */
+        .img-wrapper {
+            position: relative;
+            padding: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+            display: flex;
+        }
+
+        .img-wrapper img {
+            height: 260px;
+            width: auto;
+            min-width: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+        }
+
+        /* Card Hover Effects */
+        .img-wrapper:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 32px rgba(139, 92, 246, 0.3);
+            z-index: 10;
+        }
+
+        .img-wrapper:hover img {
+            transform: scale(1.03);
+            filter: brightness(1.1);
+        }
+
+        /* --- GLASSMORPHIC MODAL --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 2, 4, 0.5);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            padding: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.8), inset 0 1px 0 var(--glass-highlight);
+        }
+
+        .modal.active .modal-content-wrapper {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            transition-delay: 0.1s;
+        }
+
+        .modal img {
+            max-width: 85vw;
+            max-height: 70vh;
+            border-radius: 16px;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Modal Controls */
+        .close-btn {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .download-btn {
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            backdrop-filter: blur(16px);
+            color: #fff;
+            padding: 16px 36px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            border-radius: 100px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .download-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .download-btn svg {
+            transition: transform 0.3s ease;
+        }
+
+        .download-btn:hover svg {
+            transform: translateY(2px);
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            header { padding: 40px 15px 30px; }
+            .header-glass { padding: 30px 20px; border-radius: 24px; }
+            h1 { font-size: 2rem; }
+            .img-wrapper img { height: 200px; }
+            .marquee-container::before, .marquee-container::after { width: 25vw; }
+            .close-btn { top: -15px; right: -5px; width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <header>
+        <div class="header-glass">
+            <h1>AI Generated Image Collection</h1>
+            <p>All images displayed here are AI generated. The prompts used to create these visuals are part of a premium prompt package sold by Constant Abrar. You can access the complete prompt collection on <a href="https://gi28.in" target="_blank" rel="noopener noreferrer">https://gi28.in</a>.</p>
+        </div>
+    </header>
+
+    <main class="gallery" id="gallery-container">
+        <div id="loader">Initializing Glassmorphic Gallery...</div>
+    </main>
+
+    <div class="modal" id="imageModal">
+        <div class="modal-content-wrapper">
+            <div class="close-btn" id="closeModal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+            <img id="modalImg" src="" alt="High-Resolution Preview">
+            <button class="download-btn" id="downloadBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download High-Res
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION VARIABLES ---
+        const username = "constantabrar";
+        const repo = "gi28-assets";
+        const folder = ""; 
+        const numberOfRows = 4;
+
+        // Base animation speeds in seconds (larger = slower)
+        const speeds = [70, 85, 65, 80]; 
+
+        // Modal Elements
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const closeModal = document.getElementById('closeModal');
+        const downloadBtn = document.getElementById('downloadBtn');
+        let currentImageObj = null;
+
+        // --- FETCH AND RENDER SCRIPT ---
+        async function fetchImages() {
+            const folderPath = folder ? `/${folder}` : "";
+            const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents${folderPath}`;
+            const galleryContainer = document.getElementById('gallery-container');
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+                const data = await response.json();
+
+                const validExtensions = /\.(jpg|jpeg|png|webp|gif)$/i;
+                const images = data.filter(item => item.type === "file" && validExtensions.test(item.name));
+
+                if(images.length === 0) throw new Error("No images found in the repository.");
+
+                galleryContainer.innerHTML = ''; // Remove loader
+
+                // Distribute images across rows
+                const groupedImages = Array.from({ length: numberOfRows }, () => []);
+                images.forEach((img, index) => {
+                    groupedImages[index % numberOfRows].push(img);
+                });
+
+                // Generate Rows
+                groupedImages.forEach((group, index) => {
+                    if (group.length === 0) return;
+
+                    const isLTR = index % 2 === 0;
+                    const animationName = isLTR ? 'scroll-ltr' : 'scroll-rtl';
+                    const duration = speeds[index % speeds.length];
+
+                    const containerDiv = document.createElement('div');
+                    containerDiv.className = 'marquee-container';
+                    
+                    const trackDiv = document.createElement('div');
+                    trackDiv.className = 'marquee-track';
+                    trackDiv.style.animation = `${animationName} ${duration}s linear infinite`;
+
+                    // Generate HTML for one group
+                    let htmlSet = '';
+                    group.forEach(img => {
+                        htmlSet += `
+                            <div class="img-wrapper" onclick="openModal('${img.download_url}', '${img.name.replace(/'/g, "\\'")}')">
+                                <img src="${img.download_url}" alt="${img.name}" loading="lazy">
+                            </div>
+                        `;
+                    });
+
+                    // Ensure the track is wide enough to loop perfectly.
+                    // We need enough items to fill the screen width before we double it.
+                    let multipliedSet = htmlSet;
+                    while (multipliedSet.split('img-wrapper').length < 15) { // Ensure at least ~14 images per block
+                        multipliedSet += htmlSet;
+                    }
+
+                    // For a perfect CSS marquee loop from 0 to -50%, the container must contain EXACTLY two identical halves.
+                    trackDiv.innerHTML = multipliedSet + multipliedSet;
+                    
+                    containerDiv.appendChild(trackDiv);
+                    galleryContainer.appendChild(containerDiv);
+                });
+
+            } catch (error) {
+                console.error("Failed to load images:", error);
+                galleryContainer.innerHTML = `
+                    <div class="header-glass" style="margin: 0 auto;">
+                        <p style="color:#ef4444;">Error loading gallery: ${error.message}</p>
+                    </div>`;
+            }
+        }
+
+        // --- MODAL & DOWNLOAD LOGIC ---
+        window.openModal = function(url, filename) {
+            currentImageObj = { url, filename };
+            modalImg.src = url;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        };
+
+        function closeImageModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; 
+            setTimeout(() => { modalImg.src = ''; }, 500); // Clear after fade out
+        }
+
+        async function triggerDownload() {
+            if (!currentImageObj) return;
+            
+            const originalHTML = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+                Processing...
+            `;
+            downloadBtn.style.opacity = '0.8';
+
+            try {
+                const response = await fetch(currentImageObj.url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = currentImageObj.filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error("Download failed, opening in new tab.", error);
+                window.open(currentImageObj.url, '_blank');
+            } finally {
+                downloadBtn.innerHTML = originalHTML;
+                downloadBtn.style.opacity = '1';
+            }
+        }
+
+        // Events
+        closeModal.addEventListener('click', closeImageModal);
+        downloadBtn.addEventListener('click', triggerDownload);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.classList.contains('modal-content-wrapper')) {
+                closeImageModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeImageModal();
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", fetchImages);
+    </script>
+</body>
+</html>
