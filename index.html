@@ -1,118 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Auto Image Gallery</title>
+
+<title>AI Image Showcase</title>
 
 <style>
 
-body{
-font-family: Arial, sans-serif;
-background:#0f0f0f;
-color:white;
+*{
 margin:0;
-padding:20px;
+padding:0;
+box-sizing:border-box;
 }
 
-h1{
-text-align:center;
-margin-bottom:30px;
+body{
+font-family:system-ui;
+background:#0b0b0b;
+color:white;
+overflow-x:hidden;
 }
+
+/* HEADER */
+
+header{
+
+padding:60px 20px;
+text-align:center;
+
+}
+
+header h1{
+
+font-size:40px;
+margin-bottom:10px;
+letter-spacing:1px;
+
+}
+
+header p{
+
+max-width:700px;
+margin:auto;
+opacity:.8;
+line-height:1.6;
+
+}
+
+header a{
+
+color:#4da3ff;
+text-decoration:none;
+font-weight:600;
+
+}
+
+/* GALLERY */
 
 .gallery{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-gap:15px;
+
+margin-top:50px;
+
 }
 
-.gallery img{
-width:100%;
-height:200px;
+.row{
+
+display:flex;
+gap:20px;
+padding:15px 0;
+white-space:nowrap;
+
+}
+
+.row img{
+
+height:220px;
+border-radius:14px;
 object-fit:cover;
-border-radius:12px;
+transition:.4s;
 cursor:pointer;
-transition:.3s;
+
 }
 
-.gallery img:hover{
+.row img:hover{
+
 transform:scale(1.05);
+
 }
 
-.viewer{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.9);
-display:none;
-justify-content:center;
-align-items:center;
+/* animation */
+
+.marquee-right{
+
+animation:rightScroll 45s linear infinite;
+
 }
 
-.viewer img{
-max-width:90%;
-max-height:90%;
-border-radius:10px;
+.marquee-left{
+
+animation:leftScroll 45s linear infinite;
+
+}
+
+@keyframes rightScroll{
+
+0%{ transform:translateX(-50%) }
+100%{ transform:translateX(0%) }
+
+}
+
+@keyframes leftScroll{
+
+0%{ transform:translateX(0%) }
+100%{ transform:translateX(-50%) }
+
 }
 
 </style>
+
 </head>
 
 <body>
 
-<h1>Image Gallery</h1>
 
-<div class="gallery" id="gallery"></div>
+<header>
 
-<div class="viewer" id="viewer">
-<img id="fullImage">
-</div>
+<h1>AI Generated Image Collection</h1>
+
+<p>
+All images displayed here are AI generated.
+The prompts used to create these visuals are part of a premium prompt package sold by
+<strong>Constant Abrar</strong>.
+You can access the complete prompt collection on
+<a href="https://gi28.in" target="_blank">gi28.in</a>.
+</p>
+
+</header>
+
+
+<section class="gallery">
+
+<div class="row marquee-right" id="row1"></div>
+
+<div class="row marquee-left" id="row2"></div>
+
+<div class="row marquee-right" id="row3"></div>
+
+</section>
+
+
 
 <script>
 
-const username = "constantabrar";
-const repo = "gi28-assets";
-const folder = "";
+const username="constantabrar"
+const repo="gi28-assets"
+const folder=""
 
-const api = `https://api.github.com/repos/${username}/${repo}/contents/${folder}`;
+const api=`https://api.github.com/repos/${username}/${repo}/contents/${folder}`
+
 
 async function loadImages(){
 
-const res = await fetch(api);
-const data = await res.json();
+const res=await fetch(api)
+const data=await res.json()
 
-const gallery = document.getElementById("gallery");
+let images=[]
 
-data.forEach(file => {
+data.forEach(file=>{
 
-if(file.type === "file" && file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)){
+if(file.type==="file" && file.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)){
 
-const img = document.createElement("img");
-img.src = file.download_url;
-img.loading="lazy";
-
-img.onclick=()=>{
-document.getElementById("viewer").style.display="flex";
-document.getElementById("fullImage").src=file.download_url;
-}
-
-gallery.appendChild(img);
+images.push(file.download_url)
 
 }
 
-});
+})
+
+const first10=images.slice(0,10)
+const rest=images.slice(10)
+
+createRow(first10,"row1")
+createRow(rest,"row2")
+createRow(images,"row3")
 
 }
 
-document.getElementById("viewer").onclick=()=>{
-document.getElementById("viewer").style.display="none";
+
+function createRow(arr,id){
+
+const row=document.getElementById(id)
+
+let doubled=[...arr,...arr]
+
+doubled.forEach(src=>{
+
+const img=document.createElement("img")
+img.src=src
+img.loading="lazy"
+
+row.appendChild(img)
+
+})
+
 }
 
-loadImages();
+loadImages()
 
 </script>
+
 
 </body>
 </html>
