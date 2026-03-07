@@ -1,214 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Generated Image Collection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        :root {
+            --bg-color: #050507;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-glow: rgba(120, 100, 255, 0.5);
+            --accent-color: #7864ff;
+        }
 
-<title>AI Image Showcase</title>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-<style>
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(120, 100, 255, 0.2);
+        }
 
-body{
-font-family:system-ui;
-background:#0b0b0b;
-color:white;
-overflow-x:hidden;
-}
+        p {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 0;
+            font-weight: 300;
+        }
 
-/* HEADER */
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: text-shadow 0.3s ease, color 0.3s ease;
+        }
 
-header{
+        a:hover {
+            color: #988aff;
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
 
-padding:60px 20px;
-text-align:center;
+        /* Gallery Section */
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding-bottom: 80px;
+        }
 
-}
+        .marquee-container {
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
 
-header h1{
+        /* Fade edges for premium look */
+        .marquee-container::before,
+        .marquee-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
 
-font-size:40px;
-margin-bottom:10px;
-letter-spacing:1px;
+        .marquee-container::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-color), transparent);
+        }
 
-}
+        .marquee-container::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-color), transparent);
+        }
 
-header p{
+        .marquee-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            padding: 10px 0;
+        }
 
-max-width:700px;
-margin:auto;
-opacity:.8;
-line-height:1.6;
+        /* Pause on hover for better UX */
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
 
-}
+        /* Row 1: Left to Right */
+        .track-ltr {
+            animation: scroll-ltr 50s linear infinite;
+        }
 
-header a{
+        /* Row 2: Right to Left */
+        .track-rtl {
+            animation: scroll-rtl 50s linear infinite;
+        }
 
-color:#4da3ff;
-text-decoration:none;
-font-weight:600;
+        @keyframes scroll-ltr {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
 
-}
+        @keyframes scroll-rtl {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
 
-/* GALLERY */
+        /* Image Styling */
+        .img-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background-color: #111115;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.4s ease, transform 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
 
-.gallery{
+        .img-wrapper img {
+            height: 280px;
+            width: auto;
+            min-width: 200px;
+            object-fit: cover;
+            display: block;
+            border-radius: 16px;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
 
-margin-top:50px;
+        /* Hover Zoom & Glow */
+        .img-wrapper:hover {
+            box-shadow: 0 0 25px var(--accent-glow);
+            transform: translateY(-5px);
+            z-index: 10;
+        }
 
-}
+        .img-wrapper:hover img {
+            transform: scale(1.08);
+        }
 
-.row{
-
-display:flex;
-gap:20px;
-padding:15px 0;
-white-space:nowrap;
-
-}
-
-.row img{
-
-height:220px;
-border-radius:14px;
-object-fit:cover;
-transition:.4s;
-cursor:pointer;
-
-}
-
-.row img:hover{
-
-transform:scale(1.05);
-
-}
-
-/* animation */
-
-.marquee-right{
-
-animation:rightScroll 45s linear infinite;
-
-}
-
-.marquee-left{
-
-animation:leftScroll 45s linear infinite;
-
-}
-
-@keyframes rightScroll{
-
-0%{ transform:translateX(-50%) }
-100%{ transform:translateX(0%) }
-
-}
-
-@keyframes leftScroll{
-
-0%{ transform:translateX(0%) }
-100%{ transform:translateX(-50%) }
-
-}
-
-</style>
-
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 60px 20px 40px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            .img-wrapper img {
+                height: 180px;
+                min-width: 130px;
+            }
+            .marquee-container::before,
+            .marquee-container::after {
+                width: 50px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
+    <header>
+        <h1>AI Generated Image Collection</h1>
+        <p>All images displayed here are AI generated. The prompts used to create these visuals are part of a premium prompt package sold by Constant Abrar. You can access the complete prompt collection on <a href="https://gi28.in" target="_blank" rel="noopener noreferrer">https://gi28.in</a>.</p>
+    </header>
 
-<header>
+    <main class="gallery">
+        <div class="marquee-container" id="container-row1">
+            <div class="marquee-track track-ltr" id="row1"></div>
+        </div>
+        <div class="marquee-container" id="container-row2">
+            <div class="marquee-track track-rtl" id="row2"></div>
+        </div>
+    </main>
 
-<h1>AI Generated Image Collection</h1>
+    <script>
+        // --- CONFIGURATION VARIABLES ---
+        const username = "constantabrar";
+        const repo = "gi28-assets";
+        const folder = ""; 
 
-<p>
-All images displayed here are AI generated.
-The prompts used to create these visuals are part of a premium prompt package sold by
-<strong>Constant Abrar</strong>.
-You can access the complete prompt collection on
-<a href="https://gi28.in" target="_blank">gi28.in</a>.
-</p>
+        // --- FETCH AND RENDER SCRIPT ---
+        async function fetchImages() {
+            // Construct API URL
+            const folderPath = folder ? `/${folder}` : "";
+            const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents${folderPath}`;
 
-</header>
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status}`);
+                }
 
+                const data = await response.json();
 
-<section class="gallery">
+                // Detect and filter images by extensions
+                const validExtensions = /\.(jpg|jpeg|png|webp|gif)$/i;
+                const images = data.filter(item => item.type === "file" && validExtensions.test(item.name));
 
-<div class="row marquee-right" id="row1"></div>
+                // Split images based on requirements
+                // 1st to 10th image (indices 0-9)
+                const firstRowImages = images.slice(0, 10);
+                // 11th image onwards (indices 10+)
+                const secondRowImages = images.slice(10);
 
-<div class="row marquee-left" id="row2"></div>
+                // Render both rows
+                renderMarquee("row1", firstRowImages);
+                renderMarquee("row2", secondRowImages);
 
-<div class="row marquee-right" id="row3"></div>
+            } catch (error) {
+                console.error("Failed to load images:", error);
+                document.querySelector('.gallery').innerHTML = `<p style="text-align:center; color:#ff5555;">Error loading gallery: ${error.message}</p>`;
+            }
+        }
 
-</section>
+        function renderMarquee(trackId, imagesArray) {
+            const track = document.getElementById(trackId);
+            const container = document.getElementById(`container-${trackId}`);
 
+            // Hide the row if there are no images for it
+            if (!imagesArray || imagesArray.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
 
+            // Create the HTML for one set of images
+            let htmlSet = '';
+            imagesArray.forEach(img => {
+                htmlSet += `
+                    <div class="img-wrapper">
+                        <img src="${img.download_url}" alt="${img.name}" loading="lazy">
+                    </div>
+                `;
+            });
 
-<script>
+            // Duplicate the set 4 times. 
+            // Since the CSS animation translates exactly 50% of the track's width,
+            // 4 identical sets guarantee the animation loops seamlessly at the halfway point,
+            // while ensuring enough content to overflow even ultrawide screens.
+            track.innerHTML = htmlSet.repeat(4);
+        }
 
-const username="constantabrar"
-const repo="gi28-assets"
-const folder=""
-
-const api=`https://api.github.com/repos/${username}/${repo}/contents/${folder}`
-
-
-async function loadImages(){
-
-const res=await fetch(api)
-const data=await res.json()
-
-let images=[]
-
-data.forEach(file=>{
-
-if(file.type==="file" && file.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)){
-
-images.push(file.download_url)
-
-}
-
-})
-
-const first10=images.slice(0,10)
-const rest=images.slice(10)
-
-createRow(first10,"row1")
-createRow(rest,"row2")
-createRow(images,"row3")
-
-}
-
-
-function createRow(arr,id){
-
-const row=document.getElementById(id)
-
-let doubled=[...arr,...arr]
-
-doubled.forEach(src=>{
-
-const img=document.createElement("img")
-img.src=src
-img.loading="lazy"
-
-row.appendChild(img)
-
-})
-
-}
-
-loadImages()
-
-</script>
-
-
+        // Initialize script when DOM is ready
+        document.addEventListener("DOMContentLoaded", fetchImages);
+    </script>
 </body>
 </html>
