@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abrar & Mariya Marriage Gallery</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="bgLayer"></div>
+
+<div class="top-bar">
+  <input type="text" id="searchInput" class="search-input" placeholder="Search locations...">
+</div>
+
+<div class="carousel" id="carousel">
+  </div>
+
+<div class="controls-bar">
+  <button id="playPauseBtn" class="play-btn">▶</button>
+  <input type="range" id="speedSlider" class="speed-slider" min="0.02" max="0.3" step="0.01" value="0.08" title="Auto-slide Speed">
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-content">
+    <div class="close-btn" id="closeModal">✕</div>
+    <img id="modalImg" src="" alt="Preview">
+    <h2 id="modalTitle" style="margin-bottom: 20px; font-weight: 500;">Title</h2>
+    <a id="downloadBtn" href="#" class="download-btn" download>Download</a>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="images.js"></script>
+</body>
+</html>
